@@ -182,6 +182,13 @@ def find_app_by_string(script_info, module, app_name):
 
         try:
             app = call_factory(script_info, attr, args)
+
+            if not isinstance(app, Flask):
+                raise NoAppException(
+                    "A valid Flask application was not obtained from "
+                    '"{module}:{app_name}".'.format(module=module.__name__, app_name=app_name)
+                )
+
         except TypeError as e:
             if not _called_with_wrong_args(attr):
                 raise
@@ -195,13 +202,7 @@ def find_app_by_string(script_info, module, app_name):
     else:
         app = attr
 
-    if isinstance(app, Flask):
-        return app
-
-    raise NoAppException(
-        "A valid Flask application was not obtained from "
-        '"{module}:{app_name}".'.format(module=module.__name__, app_name=app_name)
-    )
+    return app
 
 
 def prepare_import(path):
